@@ -1,0 +1,92 @@
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
+import java.awt.*;
+import java.io.*;
+import java.awt.geom.*;
+
+public class Proj05Runner extends Proj05{
+  
+  public Picture copyHouses(Picture pic) {
+    Pixel sourcePixel = null;
+    Pixel targetPixel = null;
+    
+    Picture newPic = new Picture(390, 294);
+    
+    for (int sourceX=5, targetX=0; sourceX < 395; sourceX++, targetX++) {
+      for (int sourceY = 59, targetY = 0; sourceY < 353; sourceY++, targetY++) {
+        //set the target Pixel color to the source pixel color
+          
+        sourcePixel = pic.getPixel(sourceX, sourceY);
+        targetPixel = newPic.getPixel(targetX,targetY);
+        targetPixel.setColor(sourcePixel.getColor());
+      }
+    }
+    return newPic;
+  }
+  
+  public Picture highlightLightandDark(Picture mark, double amount, Color replacementColor){
+    Pixel pixel = null;
+    
+    for(int x=0; x < mark.getWidth(); x++) {
+      for(int y=0; y < mark.getHeight(); y++) {
+        pixel = mark.getPixel(x,y);
+        if (pixel.colorDistance(Color.red) < amount ||
+            pixel.colorDistance(Color.green) < amount) {
+          pixel.setColor(replacementColor);
+      }
+    }
+    }
+    return mark;
+ }
+  
+  void run() {
+    Picture newBg = new Picture("Proj05c.jpg");
+    newBg = copyHouses(newBg);
+    Picture mark = new Picture("Proj05a.bmp");
+    mark = copyHouses(mark);
+    Picture john = new Picture("Proj05b.bmp");
+    john = copyHouses(john);
+    
+    
+    newBg.addMessage( 
+      "I certify that this program is my own work",10,30); 
+    newBg.addMessage( 
+      "and is not the work of others. I agree not",10,48); 
+    newBg.addMessage("to share my solution with others.",10,66); 
+    newBg.addMessage("Sharlene Mutto.",10,92);
+ 
+    Pixel[] markArray = mark.getPixels();
+    Pixel [] johnArray = john.getPixels();
+    Pixel currPixel = null;
+    Pixel newPixel = null;
+    Pixel markPixel = null;
+    Pixel johnPixel = null;
+    
+    // loop through the pixels
+    for (int i=0; i < markArray.length; i++)
+    {
+      //get the current pixel
+      markPixel = markArray[i];
+      johnPixel = johnArray[i];
+      if (markPixel.getRed() + markPixel.getBlue() < markPixel.getGreen()) // if girl greenscreen
+      {
+        if (johnPixel.getRed() + johnPixel.getBlue() < johnPixel.getGreen())  // if spot greenscreen
+        {
+          newPixel = newBg.getPixel(johnPixel.getX(), johnPixel.getY()); // get background pixel
+        }
+        else {
+          newPixel = john.getPixel(markPixel.getX(), markPixel.getY()); // get spot pixel
+        }
+        markPixel.setColor(newPixel.getColor());  // set mark pixel
+      } 
+    } 
+    mark = highlightLightandDark(mark,50.0,java.awt.Color.yellow);
+    mark.explore();
+    
+  }
+}
+
+
+  
+
