@@ -1,0 +1,49 @@
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
+import java.awt.*;
+import java.io.*;
+import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.Graphics;
+
+public class Proj06Runner extends Proj06{
+  
+  public void Proj06Runner(){
+    System.out.println("Sharlene Mutto");}
+  
+  public Picture rotatePicture (double angle) {
+      AffineTransform rotateTransform = new AffineTransform();
+      
+      rotateTransform.rotate(Math.toRadians(angle), pic.getWidth()/2, pic.getHeight()/2);
+      Rectangle2D rect = pic.getTranslationEnclosingRect(rotateTransform);
+      //create new pic object big enough to hld the result
+      Picture result = new Picture(
+                                   (int)(Math.ceil(rect.getWidth())),
+                                   (int)(Math.ceil(rect.getHeight())));
+      //get the graphics 2d object from the result
+      Graphics graphics = result.getGraphics();
+      Graphics2D g2 = (Graphics2D) graphics;
+      //save current transformation and set-up to center the new image
+      AffineTransform savedTrans = g2.getTransform();
+      AffineTransform centerTrans = new AffineTransform();
+      centerTrans.translate(0 - rect.getX(), 0 - rect.getY());
+      g2.setTransform(centerTrans);
+      
+      //draw the current image onto the result image rotated
+      g2.drawImage(result.getImage(),rotateTransform,null);
+      
+      //reset g2 transformation to the saved one
+      g2.setTransform(savedTrans);
+      System.out.print(g2);
+      return result;
+    }
+  
+  public void run(double angle) {
+    this.rotatePicture(angle);
+  }
+}
+    
+    
